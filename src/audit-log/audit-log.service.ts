@@ -7,8 +7,19 @@ import { AuditLog } from './audit-log.entity';
 export class AuditLogService {
   constructor(@InjectRepository(AuditLog) private repo: Repository<AuditLog>) {}
 
-  async createLog(newEventId: string, oldEventIds: string[]) {
-    const log = this.repo.create({ newEventId, oldEventIds });
+  async createLog(
+    newEventId: string,
+    oldEvents: {
+      id: string;
+      title: string;
+      description?: string | null;
+      status: string;
+      startTime: string;
+      endTime: string;
+      invitees: { id: string; name: string }[];
+    }[],
+  ) {
+    const log = this.repo.create({ newEventId, oldEvents });
     return this.repo.save(log);
   }
 

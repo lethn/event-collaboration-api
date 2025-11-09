@@ -14,7 +14,15 @@ export class AuditLog {
   newEventId: string;
 
   @Column({ type: 'jsonb' })
-  oldEventIds: string[];
+  oldEvents: {
+    id: string;
+    title: string;
+    description?: string | null;
+    status: string;
+    startTime: string;
+    endTime: string;
+    invitees: { id: string; name: string }[];
+  }[];
 
   @CreateDateColumn()
   createdAt: Date;

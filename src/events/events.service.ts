@@ -124,7 +124,10 @@ export class EventsService {
       }
 
       const titles = group.map((e) => e.title).join(' + ');
-      const description = group.map((e) => e.description).join(' | ');
+      const description = group
+        .map((e) => e.description ?? '')
+        .filter((d) => d.trim() !== '')
+        .join(' | ');
       const status = group[group.length - 1].status; // Latest event's status
       const start = new Date(
         Math.min(...group.map((e) => e.startTime.getTime())),
@@ -153,7 +156,18 @@ export class EventsService {
 
       await this.auditLogService.createLog(
         saved.id,
-        group.map((e) => e.id),
+        group.map((e) => ({
+          id: e.id,
+          title: e.title,
+          description: e.description ?? null,
+          status: e.status,
+          startTime: e.startTime.toISOString(),
+          endTime: e.endTime.toISOString(),
+          invitees: e.invitees.map((u) => ({
+            id: u.id,
+            name: u.name,
+          })),
+        })),
       );
 
       await this.repo.remove(group); // Delete old events

@@ -1,98 +1,123 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Event Collaboration API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A backend system built with **NestJS**, **TypeORM**, and **PostgreSQL** that allows users to create events, detect scheduling conflicts, merge overlapping events, generate summarized merged results, perform efficient batch inserts, and keep a clear audit trail of merge operations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## API Endpoints
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Events
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/events` | Create an event |
+| GET | `/events` | List all events |
+| GET | `/events/:id` | Get a single event |
+| PATCH | `/events/:id` | Update an event |
+| DELETE | `/events/:id` | Delete an event |
+| GET | `/events/conflicts/:userId` | Detect overlapping events for a user |
+| POST | `/events/merge-all/:userId` | Merge overlapping events for that user |
+| POST | `/events/batch` | Create up to 500 events in one request |
 
-## Project setup
+### Users
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/users` | Create a user |
+| GET | `/users` | List users |
+| GET | `/users/:id` | Get a user and their events |
 
+### Audit Logs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/audit-logs` | View merge history |
+| DELETE | `/audit-logs/:id` | Delete a log entry |
+
+---
+
+## How to Run the Project
+
+### 1. Install dependencies
 ```bash
-$ npm install
+npm install
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### 2. Ensure PostgreSQL is installed and running locally
+Create the main database:
+```sql
+CREATE DATABASE event_collaboration;
 ```
 
-## Run tests
+### 3. Create a `.env` file in the project root:
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=your_password_here
+DB_NAME=event_collaboration
+DB_SYNC=true
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+AI_PROVIDER=mock
+AI_API_KEY=sk-demo
+AI_CACHE=memory
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 4. Start the server
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+API will be available at:
+```
+http://localhost:3000
+```
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## How to Run Tests
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 1. Create a separate test database:
+```sql
+CREATE DATABASE event_collaboration_test;
+```
 
-## Support
+### 2. Create `.env.test`:
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=your_password_here
+DB_NAME=event_collaboration_test
+DB_SYNC=true
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+AI_PROVIDER=mock
+```
 
-## Stay in touch
+### 3. Run tests:
+```bash
+npm test
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Additional:
+```
+npm run test:watch
+npm run test:cov
+```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## AI Layer (Mocked but Extendable)
+
+The system currently uses a mock summarizer to generate short one-line summaries for merged events, and these summaries are automatically cached for efficiency. The AI layer is intentionally built around a clean and interchangeable interface, so the summarizer can be replaced with a real model such as OpenAI, Anthropic, or a self-hosted local model. Integrating a real AI service only requires implementing the same summarizer interface and updating the AI_PROVIDER environment value, without any changes to the rest of the application logic.
+
+---
+
+## AI Usage
+
+I used AI to help accelerate repetitive development tasks, especially around generating boilerplate, organizing module structure, finding errors and resolving debugging issues in the AI summarization flow and the batch insertion path. However, the core event logic that defines scheduling conflict detection, merging behavior, and data consistency rules was implemented manually to ensure that the system operates in a fully explainable, predictable, and intentional way. The goal was to leverage AI as a development assistant while maintaining complete ownership of the core problem-solving and reasoning processes.
+
+---
+
+## Reasoning About the Merge Algorithm
+
+The merge algorithm identifies overlapping events by comparing their time ranges using the rule that one event overlaps another when its start time occurs before the other event’s end time and its end time occurs after the other event’s start time. Events that overlap are grouped together and each group is replaced with a single merged event that combines the titles and descriptions, expands the time span to cover the earliest start and latest end, takes the status of the most recently ending event, and unifies invitees without duplicates. The system records the original event IDs in the `mergedFrom` field and creates an audit log entry that maps old events to the new merged one, ensuring that the merge process remains transparent and traceable.
+
+

@@ -5,6 +5,7 @@ import { Event } from './event.entity';
 import { UsersService } from '../users/users.service';
 import { CreateEventDto } from './dto/create-event-dto';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { AiService } from '../ai/ai.service';
 
 @Injectable()
 export class EventsService {
@@ -12,6 +13,7 @@ export class EventsService {
     @InjectRepository(Event) private repo: Repository<Event>,
     private usersService: UsersService,
     private auditLogService: AuditLogService,
+    private aiService: AiService,
   ) {}
 
   async create(dto: CreateEventDto) {
@@ -88,7 +90,7 @@ export class EventsService {
     return conflicts;
   }
 
-  async mergeAllEventsByUserId(userId: string) {
+  async mergeAllEventsByUserId(userId: string): Promise<any[]> {
     const events = await this.repo.find({
       where: { owner: { id: userId } },
       order: { startTime: 'ASC' },
@@ -111,7 +113,8 @@ export class EventsService {
       if (!placed) groups.push([event]);
     }
 
-    const mergedResults: Event[] = [];
+    // const mergedResults: Event[] = [];
+    const mergedResults: any[] = [];
 
     for (const group of groups) {
       // Skip if single event
@@ -142,6 +145,11 @@ export class EventsService {
 
       const saved = await this.repo.save(mergedEvent);
 
+      const aiSummary = await this.aiService.summarizeMerged(
+        group.map((e) => e.title),
+        group.length,
+      );
+
       await this.auditLogService.createLog(
         saved.id,
         group.map((e) => e.id),
@@ -149,7 +157,10 @@ export class EventsService {
 
       await this.repo.remove(group); // Delete old events
 
-      mergedResults.push(saved);
+      mergedResults.push({
+        ...saved,
+        aiSummary,
+      });
     }
 
     return mergedResults;

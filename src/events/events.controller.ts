@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event-dto';
+import { BatchCreateEventsDto } from './dto/batch-create-events.dto';
 
 @Controller('events')
 export class EventsController {
@@ -22,6 +23,11 @@ export class EventsController {
   @Post('merge-all/:userId')
   mergeAllEventsByUserId(@Param('userId') userId: string) {
     return this.eventsService.mergeAllEventsByUserId(userId);
+  }
+
+  @Post('batch')
+  createBatch(@Body() dto: BatchCreateEventsDto) {
+    return this.eventsService.createBatch(dto.events);
   }
 
   @Get()

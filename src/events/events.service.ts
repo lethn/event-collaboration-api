@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Event } from './event.entity';
 import { UsersService } from '../users/users.service';
 import { CreateEventDto } from './dto/create-event-dto';
@@ -14,6 +14,7 @@ export class EventsService {
     private usersService: UsersService,
     private auditLogService: AuditLogService,
     private aiService: AiService,
+    private dataSource: DataSource,
   ) {}
 
   async create(dto: CreateEventDto) {
@@ -164,5 +165,51 @@ export class EventsService {
     }
 
     return mergedResults;
+  }
+
+  async createBatch(eventInputs: CreateEventDto[]): Promise<Event[]> {
+    if (eventInputs.length > 500) {
+      throw new BadRequestException('Batch limit is 500 events');
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const toInsert: Event[] = [];
+
+      for (const dto of eventInputs) {
+        const owner = await this.usersService.findById(dto.ownerId);
+        if (!owner)
+          throw new BadRequestException(`Owner not found: ${dto.ownerId}`);
+
+        const invitees = dto.inviteeIds?.length
+          ? await this.usersService.findMany(dto.inviteeIds)
+          : [];
+
+        toInsert.push(
+          this.repo.create({
+            title: dto.title,
+            description: dto.description,
+            status: dto.status ?? 'TODO',
+            startTime: new Date(dto.startTime),
+            endTime: new Date(dto.endTime),
+            owner,
+            invitees,
+          }),
+        );
+      }
+
+      const saved = await queryRunner.manager.save(Event, toInsert);
+
+      await queryRunner.commitTransaction();
+      return saved;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

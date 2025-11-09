@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IsString, IsOptional, IsArray, IsDateString } from 'class-validator';
 
 export class CreateEventDto {

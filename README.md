@@ -122,4 +122,11 @@ I used AI to help accelerate repetitive development tasks, especially around gen
 
 The merge algorithm identifies overlapping events by comparing their time ranges using the rule that one event overlaps another when its start time occurs before the other event’s end time and its end time occurs after the other event’s start time. Events that overlap are grouped together and each group is replaced with a single merged event that combines the titles and descriptions, expands the time span to cover the earliest start and latest end, takes the status of the most recently ending event, and unifies invitees without duplicates. The system records the original event IDs in the `mergedFrom` field and creates an audit log entry that maps old events to the new merged one, ensuring that the merge process remains transparent and traceable.
 
+---
+
+## Video Demo
+https://drive.google.com/drive/u/5/folders/10hhU_-BfwsUFDcCUVWASVF62v4grNwuI
+
+
+
 

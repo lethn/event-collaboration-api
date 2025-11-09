@@ -89,6 +89,8 @@ DB_NAME=event_collaboration_test
 DB_SYNC=true
 
 AI_PROVIDER=mock
+AI_API_KEY=sk-demo
+AI_CACHE=memory
 ```
 
 ### 3. Run tests:
